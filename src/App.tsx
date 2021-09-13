@@ -1,6 +1,6 @@
 import React from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import ClickerElement from "./ClickerElement";
+import Main from "./components/Main";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -18,7 +18,7 @@ function App() {
 
   return (
     <div className={classes.root}>
-      <ClickerElement />
+      <Main />
     </div>
   );
 }
