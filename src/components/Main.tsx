@@ -22,9 +22,10 @@ const bps_multiplier = 1000 / UPDATE_INTERVAL;
 
 /*
   Plan:
-  - show statistics and additional information about assets when hovering
-  - autosave into local storage (every minute or something else?)
+  - layout
   - styling
+  - show statistics and additional information about assets when hovering (or visible constantly)
+  - autosave into local storage (every minute or something else?)
   - general upgrades, like beer styles (not attached to any building, multiplies the final output)
   - achievements (also keep count of different things, like: total clicks, certain BPS and BPC, etc.)
 */
@@ -39,8 +40,10 @@ const bps_multiplier = 1000 / UPDATE_INTERVAL;
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      flexGrow: 1,
+    rootGrid: {
+      marginTop: 0,
+      height: "100%",
+      alignItems: "stretch",
     },
     clickerArea: {
       color: "#fff",
@@ -144,34 +147,36 @@ const Main = () => {
   }, [autoClickerEnabled, autoBrew]);
 
   return (
-    <div className={classes.root}>
-      <Grid container spacing={3}>
-        <Grid item xs={3} className={classes.clickerArea}>
-          <ClickerArea
-            beerCount={beerCount}
-            bpc={bpc}
-            bps={bps}
-            autoClickerEnabled={autoClickerEnabled}
-            bps_multiplier={bps_multiplier}
-            click={click}
-          />
-        </Grid>
-        <Grid item xs={3} className={classes.upgradesArea}>
-          <UpgradesArea
-            beerCount={beerCount}
-            upgrades={upgrades}
-            buyUpgrade={buyUpgrade}
-          />
-        </Grid>
-        <Grid item xs={6} className={classes.assetsArea}>
-          <AssetsArea
-            beerCount={beerCount}
-            assets={assets}
-            buyAsset={buyAsset}
-          />
+    <Grid container spacing={3} className={classes.rootGrid}>
+      <Grid item xs={4} className={classes.clickerArea}>
+        <ClickerArea
+          beerCount={beerCount}
+          bpc={bpc}
+          bps={bps}
+          autoClickerEnabled={autoClickerEnabled}
+          bps_multiplier={bps_multiplier}
+          click={click}
+        />
+      </Grid>
+      <Grid item xs={8}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} className={classes.assetsArea}>
+            <AssetsArea
+              beerCount={beerCount}
+              assets={assets}
+              buyAsset={buyAsset}
+            />
+          </Grid>
+          <Grid item xs={12} className={classes.upgradesArea}>
+            <UpgradesArea
+              beerCount={beerCount}
+              upgrades={upgrades}
+              buyUpgrade={buyUpgrade}
+            />
+          </Grid>
         </Grid>
       </Grid>
-    </div>
+    </Grid>
   );
 };
 

@@ -14,6 +14,7 @@ export enum AssetStatus {
 export interface Asset {
   id: string;
   name: string;
+  description: string;
   bpc: number;
   bps: number;
   amount: number;
@@ -30,6 +31,7 @@ export const initialAssets: Assets = {
   homebrew: {
     id: "homebrew",
     name: "Homebrew kit",
+    description: "Basic homebrewing supplies",
     bpc: 1,
     bps: 0.1,
     amount: 0,
@@ -40,6 +42,7 @@ export const initialAssets: Assets = {
   brewsystem: {
     id: "brewsystem",
     name: "All-In-One brewing system",
+    description: "Electronically controlled kettle",
     bpc: 5,
     bps: 0.5,
     amount: 0,
@@ -50,6 +53,7 @@ export const initialAssets: Assets = {
   employee: {
     id: "employee",
     name: "Employee",
+    description: "Brews beer",
     bpc: 6,
     bps: 1,
     amount: 0,
@@ -60,6 +64,7 @@ export const initialAssets: Assets = {
   microbrewery: {
     id: "microbrewery",
     name: "Microbrewery",
+    description: "Brew larger amounts of beer",
     bpc: 20,
     bps: 4,
     amount: 0,
@@ -70,6 +75,7 @@ export const initialAssets: Assets = {
   plant: {
     id: "plant",
     name: "Brewing plant",
+    description: "Get your beer to supermarkets",
     bpc: 80,
     bps: 25,
     amount: 0,
@@ -80,6 +86,7 @@ export const initialAssets: Assets = {
   farm: {
     id: "farm",
     name: "Farm",
+    description: "Grow your own grain and hops",
     bpc: 240,
     bps: 48,
     amount: 0,

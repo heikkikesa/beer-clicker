@@ -1,14 +1,12 @@
-import React from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Main from "./components/Main";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      backgroundColor: "#345",
-      height: "100%",
-      width: "100%",
-      position: "absolute",
+      height: "100vh",
+      padding: `0 ${theme.spacing(2)}px`,
+      backgroundColor: theme.palette.background.default,
     },
   })
 );
