@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Assets, AssetStatus } from "../items/assets";
 import { Upgrades, UpgradeStatus } from "../items/upgrades";
 
@@ -46,8 +47,10 @@ export const calculateBPS = (assets: Assets, upgrades: Upgrades): number => {
       (assetTotal, multiplier) => assetTotal * multiplier,
       assetBaseOutput
     );
-    return Math.round(total + assetTotalOutput);
+    return total + assetTotalOutput;
   }, 0);
+  //console.log("bps", total);
+  //return Math.round(total);
 };
 
 // Iterate over bought assets upgrades and change their status to available if not available
@@ -115,4 +118,24 @@ export const handleAssetPurchaseStatuses = (
     }
   }
   return assets;
+};
+
+// Thanks for Dan Abramov for this
+// source: https://overreacted.io/making-setinterval-declarative-with-react-hooks/
+type TimerHandler = (...args: any[]) => void;
+export const useInterval = (callback: TimerHandler, delay: number) => {
+  const savedCallbackRef = useRef<TimerHandler>();
+
+  useEffect(() => {
+    savedCallbackRef.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    const handler = (...args: any[]) => savedCallbackRef.current!(...args);
+
+    if (delay !== null) {
+      const intervalId = setInterval(handler, delay);
+      return () => clearInterval(intervalId);
+    }
+  }, [delay]);
 };

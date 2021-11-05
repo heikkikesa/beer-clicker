@@ -3,9 +3,26 @@ import beerImage from "../images/beer.svg";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    beerImageContainer: {
+      padding: theme.spacing(2),
+      userSelect: "none",
+    },
     beerImage: {
-      width: 100,
-      height: 100,
+      width: 150,
+      height: 150,
+      cursor: "pointer",
+      transitionDuration: ".05s",
+      "&:active": {
+        transform: "scale(.9)",
+      },
+    },
+    total: {
+      fontFamily: "Vollkorn,serif",
+      fontSize: "3rem",
+      color: theme.palette.primary.main,
+    },
+    perSecond: {
+      fontSize: "1.2rem",
     },
   })
 );
@@ -31,17 +48,21 @@ const ClickerArea = ({
 
   return (
     <>
-      <div>Beers brewed: {Math.round(beerCount)}</div>
-      <div>Beers-per-Click: {bpc}</div>
+      <div className={classes.total}>{Math.round(beerCount)}</div>
+      <div className={classes.beerImageContainer}>
+        <img
+          className={classes.beerImage}
+          src={beerImage}
+          alt="ebin"
+          onClick={() => click()}
+        />
+      </div>
+      {/*<div>Beers-per-Click: {bpc}</div>*/}
       {autoClickerEnabled && (
-        <div>Beers-per-Second: {bps * bps_multiplier}</div>
+        <div className={classes.perSecond}>
+          {Math.round(bps * bps_multiplier)} per second
+        </div>
       )}
-      <img
-        className={classes.beerImage}
-        src={beerImage}
-        alt="ebin"
-        onClick={() => click()}
-      />
     </>
   );
 };

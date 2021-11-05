@@ -1,33 +1,42 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 
-import { initialUpgrades, Upgrade } from "../items/upgrades";
+import { initialUpgrades, Upgrade, Upgrades } from "../items/upgrades";
 import ClickerArea from "./ClickerArea";
-import UpgradesArea from "./UpgradesArea";
 import AssetsArea from "./AssetsArea";
-import { Asset, initialAssets } from "../items/assets";
+import { Asset, Assets, initialAssets } from "../items/assets";
 import {
   calculateBPC,
   calculateBPS,
   handleActiveUpgrades,
   handleAssetPurchaseStatuses,
   handleAvailableUpgrades,
+  useInterval,
 } from "../helpers/functions";
 
 const PRICE_MULTIPLIER = 1.15;
 const AUTOCLICKER_TRIGGER = "employee";
 const UPDATE_INTERVAL = 100;
+//const SAVE_INTERVAL = 1000 * 60 * 5; // 5 minutes
+const SAVE_INTERVAL = 1000 * 10; // 10 seconds
 const bps_multiplier = 1000 / UPDATE_INTERVAL;
+
+type Save = {
+  beerCount: number;
+  assets: Assets;
+  upgrades: Upgrades;
+  autoClickerEnabled: boolean;
+};
 
 /*
   Plan:
-  - layout
-  - styling
-  - show statistics and additional information about assets when hovering (or visible constantly)
-  - autosave into local storage (every minute or something else?)
+  - show statistics and additional information about assets
+  - format long numbers to show words (million, trillion, etc.) (also for prices)
+  - autosave into local storage (every minute or something else?) (and enable save export/import)
   - general upgrades, like beer styles (not attached to any building, multiplies the final output)
   - achievements (also keep count of different things, like: total clicks, certain BPS and BPC, etc.)
+  - how to upgrade the asset and upgrade list so that old users get the updated elements?
 */
 
 /*
@@ -43,34 +52,74 @@ const useStyles = makeStyles((theme: Theme) =>
     rootGrid: {
       marginTop: 0,
       height: "100%",
-      alignItems: "stretch",
+      //alignItems: "stretch",
     },
     clickerArea: {
       color: "#fff",
       textAlign: "center",
+      display: "flex",
+      flexDirection: "column",
     },
-    upgradesArea: {},
-    assetsArea: {},
   })
 );
 
 const Main = () => {
   const classes = useStyles();
 
+  // saving functionality
+  // create an object
+  /*
+    {
+      beerCount,
+      assets,
+      upgrades,
+      autoClickerEnabled,
+    }
+  */
+  // when loading page -> read the object and update all the states
+  // might work automatically?
+
+  const [loaded, setLoaded] = useState(false);
   const [beerCount, setBeerCount] = useState(0);
   const [bpc, setBPC] = useState(1); // beer per manual click
   const [bps, setBPS] = useState(0); // beer per second (automatic)
   const [assets, setAssets] = useState(initialAssets);
   const [upgrades, setUpgrades] = useState(initialUpgrades);
   const [autoClickerEnabled, setAutoclickerEnabled] = useState(false);
+  const [autoClickerIntervalActive, setAutoClickerIntervalActive] =
+    useState(false);
+
+  const save = () => {
+    const data: Save = {
+      beerCount,
+      assets,
+      upgrades,
+      autoClickerEnabled,
+    };
+    localStorage.setItem("saveData", JSON.stringify(data));
+    console.log(beerCount);
+    console.log("saved");
+  };
 
   const click = useCallback(() => {
     setBeerCount(beerCount + bpc);
   }, [beerCount, bpc]);
 
   const autoBrew = useCallback(() => {
-    setBeerCount(beerCount + bps);
-  }, [beerCount, bps]);
+    if (autoClickerEnabled) {
+      setBeerCount(beerCount + bps);
+    }
+  }, [beerCount, bps, autoClickerEnabled]);
+
+  const updatePerSecondAmounts = (assets: Assets, upgrades: Upgrades) => {
+    // calculate new bpc
+    const newBPC = calculateBPC(assets, upgrades);
+    setBPC(newBPC);
+
+    // calculate new bps
+    const newBPS = calculateBPS(assets, upgrades);
+    setBPS(newBPS);
+  };
 
   const buyAsset = (asset: Asset) => {
     // buying should also cost something
@@ -108,13 +157,7 @@ const Main = () => {
     );
     setUpgrades(updatedUpgrades);
 
-    // calculate new bpc
-    const newBPC = calculateBPC(assets, upgrades);
-    setBPC(newBPC);
-
-    // calculate new bps
-    const newBPS = calculateBPS(assets, upgrades);
-    setBPS(newBPS);
+    updatePerSecondAmounts(assets, upgrades);
   };
 
   const buyUpgrade = (upgrade: Upgrade, assetId: string) => {
@@ -123,16 +166,14 @@ const Main = () => {
       return;
     }
 
+    // pay
+    setBeerCount(beerCount - upgrade.price);
+
     // change the upgrade status to active
     const updatedUpgrades = handleActiveUpgrades(upgrades, upgrade.id, assetId);
     setUpgrades(updatedUpgrades);
 
-    // calculate new BPS and BPC
-    const newBPC = calculateBPC(assets, upgrades);
-    setBPC(newBPC);
-
-    const newBPS = calculateBPS(assets, upgrades);
-    setBPS(newBPS);
+    updatePerSecondAmounts(assets, upgrades);
   };
 
   const enableAutoClicker = () => {
@@ -140,15 +181,33 @@ const Main = () => {
   };
 
   useEffect(() => {
-    if (autoClickerEnabled) {
-      const interval = setInterval(() => autoBrew(), UPDATE_INTERVAL);
-      return () => clearInterval(interval);
+    // try to load data from localStorage if everything is empty
+    if (!loaded) {
+      const saveJSON = localStorage.getItem("saveData");
+      if (saveJSON) {
+        const data: Save = JSON.parse(saveJSON);
+        setBeerCount(data.beerCount);
+        setAssets(data.assets);
+        setUpgrades(data.upgrades);
+        setAutoclickerEnabled(data.autoClickerEnabled);
+
+        updatePerSecondAmounts(data.assets, data.upgrades);
+      }
+      setLoaded(true);
     }
-  }, [autoClickerEnabled, autoBrew]);
+  }, [loaded]);
+
+  useInterval(() => {
+    autoBrew();
+  }, UPDATE_INTERVAL);
+
+  useInterval(() => {
+    save();
+  }, SAVE_INTERVAL);
 
   return (
     <Grid container spacing={3} className={classes.rootGrid}>
-      <Grid item xs={4} className={classes.clickerArea}>
+      <Grid item md={4} xs={12} className={classes.clickerArea}>
         <ClickerArea
           beerCount={beerCount}
           bpc={bpc}
@@ -158,24 +217,16 @@ const Main = () => {
           click={click}
         />
       </Grid>
-      <Grid item xs={8}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} className={classes.assetsArea}>
-            <AssetsArea
-              beerCount={beerCount}
-              assets={assets}
-              buyAsset={buyAsset}
-            />
-          </Grid>
-          <Grid item xs={12} className={classes.upgradesArea}>
-            <UpgradesArea
-              beerCount={beerCount}
-              upgrades={upgrades}
-              buyUpgrade={buyUpgrade}
-            />
-          </Grid>
-        </Grid>
+      <Grid item md={8} xs={12}>
+        <AssetsArea
+          beerCount={beerCount}
+          assets={assets}
+          upgrades={upgrades}
+          buyAsset={buyAsset}
+          buyUpgrade={buyUpgrade}
+        />
       </Grid>
+      <div onClick={save}>Save</div>
     </Grid>
   );
 };
