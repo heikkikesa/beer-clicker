@@ -4,21 +4,29 @@ export enum UpgradeStatus {
   Active,
 }
 
-export interface Upgrade {
+export interface UpgradeData {
   id: string;
   name: string;
   description: string;
   multiplier: number;
   price: number;
   availabilityRequirement: number;
+}
+
+export type UpgradeDatas = {
+  [assetId: string]: UpgradeData[];
+};
+
+export interface Upgrade {
+  id: string;
   status: UpgradeStatus;
 }
 
-export interface Upgrades {
+export type Upgrades = {
   [assetId: string]: Upgrade[];
-}
+};
 
-export const initialUpgrades: Upgrades = {
+export const allUpgrades: UpgradeDatas = {
   homebrew: [
     {
       id: "biggerKettle",
@@ -27,7 +35,6 @@ export const initialUpgrades: Upgrades = {
       name: "Bigger kettle",
       description: "Improves Homebrew Kit output by 50%",
       availabilityRequirement: 3,
-      status: UpgradeStatus.Unavailable,
     },
     {
       id: "biggerFermenter",
@@ -36,7 +43,6 @@ export const initialUpgrades: Upgrades = {
       name: "Bigger fermenter",
       description: "",
       availabilityRequirement: 40,
-      status: UpgradeStatus.Unavailable,
     },
   ],
   brewsystem: [
@@ -47,7 +53,46 @@ export const initialUpgrades: Upgrades = {
       name: "Whirlpool arm",
       description: "",
       availabilityRequirement: 10,
-      status: UpgradeStatus.Unavailable,
+    },
+  ],
+  employee: [
+    {
+      id: "education",
+      multiplier: 1.5,
+      price: 50000,
+      name: "Educate employees",
+      description: "",
+      availabilityRequirement: 10,
+    },
+  ],
+  microbrewery: [
+    {
+      id: "equipment",
+      multiplier: 1.5,
+      price: 200000,
+      name: "Better equipment",
+      description: "",
+      availabilityRequirement: 10,
+    },
+  ],
+  plant: [
+    {
+      id: "cheaperPower",
+      multiplier: 1.5,
+      price: 500000,
+      name: "Cheaper power contract",
+      description: "",
+      availabilityRequirement: 10,
+    },
+  ],
+  farm: [
+    {
+      id: "widerSower",
+      multiplier: 1.5,
+      price: 2000000,
+      name: "Wider sowers",
+      description: "",
+      availabilityRequirement: 10,
     },
   ],
 };

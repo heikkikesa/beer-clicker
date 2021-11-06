@@ -11,89 +11,99 @@ export enum AssetStatus {
   Purchased,
 }
 
-export interface Asset {
+export interface AssetData {
   id: string;
   name: string;
   description: string;
-  bpc: number;
-  bps: number;
+  bpcCoefficient: number;
+  bpsCoefficient: number;
+  initialPrice: number;
+  image: string;
+}
+
+export type AssetDatas = {
+  [index: string]: AssetData;
+};
+
+export interface Asset {
+  id: string;
   amount: number;
   price: number;
-  image: string;
+  bps: number;
+  bpc: number;
   status: AssetStatus;
 }
 
-export interface Assets {
+export type Assets = {
   [index: string]: Asset;
-}
+};
 
-export const initialAssets: Assets = {
+export const allAssets: AssetDatas = {
   homebrew: {
     id: "homebrew",
     name: "Homebrew kit",
     description: "Basic homebrewing supplies",
-    bpc: 1,
-    bps: 0.1,
-    amount: 0,
-    price: 25,
+    bpcCoefficient: 1,
+    bpsCoefficient: 0.1,
+    initialPrice: 25,
     image: homeBrewImage,
-    status: AssetStatus.Available,
   },
   brewsystem: {
     id: "brewsystem",
     name: "All-In-One brewing system",
     description: "Electronically controlled kettle",
-    bpc: 5,
-    bps: 0.5,
-    amount: 0,
-    //price: 450,
-    price: 45,
+    bpcCoefficient: 5,
+    bpsCoefficient: 0.5,
+    initialPrice: 450,
+    //initialPrice: 45,
     image: brewSystemImage,
-    status: AssetStatus.Unavailable,
   },
   employee: {
     id: "employee",
     name: "Employee",
     description: "Brews beer",
-    bpc: 6,
-    bps: 1,
-    amount: 0,
-    //price: 2500,
-    price: 250,
+    bpcCoefficient: 6,
+    bpsCoefficient: 1,
+    initialPrice: 2500,
+    //initialPrice: 250,
     image: employeeImage,
-    status: AssetStatus.Unavailable,
   },
   microbrewery: {
     id: "microbrewery",
     name: "Microbrewery",
     description: "Brew larger amounts of beer",
-    bpc: 20,
-    bps: 4,
-    amount: 0,
-    price: 20000,
+    bpcCoefficient: 8,
+    bpsCoefficient: 4,
+    initialPrice: 20000,
     image: microBreweryImage,
-    status: AssetStatus.Unavailable,
   },
   plant: {
     id: "plant",
     name: "Brewing plant",
     description: "Get your beer to supermarkets",
-    bpc: 80,
-    bps: 25,
-    amount: 0,
-    price: 245000,
+    bpcCoefficient: 15,
+    bpsCoefficient: 25,
+    initialPrice: 245000,
     image: plantImage,
-    status: AssetStatus.Unavailable,
   },
   farm: {
     id: "farm",
     name: "Farm",
     description: "Grow your own grain and hops",
-    bpc: 240,
-    bps: 48,
-    amount: 0,
-    price: 750000,
+    bpcCoefficient: 20,
+    bpsCoefficient: 48,
+    initialPrice: 750000,
     image: farmingImage,
-    status: AssetStatus.Unavailable,
+  },
+};
+
+export const initialAssets: Assets = {
+  homebrew: {
+    id: allAssets.homebrew.id,
+    amount: 0,
+    price: allAssets.homebrew.initialPrice,
+    bpc: 0,
+    bps: 0,
+    status: AssetStatus.Available,
   },
 };

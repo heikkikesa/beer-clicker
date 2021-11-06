@@ -2,9 +2,22 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import classNames from "classnames";
-import { Assets, AssetStatus } from "../items/assets";
+import {
+  Asset,
+  AssetData,
+  Assets,
+  AssetStatus,
+  allAssets,
+} from "../items/assets";
 import coinImage from "../images/money.svg";
-import { Upgrades, UpgradeStatus } from "../items/upgrades";
+import {
+  allUpgrades,
+  Upgrade,
+  UpgradeData,
+  Upgrades,
+  UpgradeStatus,
+} from "../items/upgrades";
+import { bps_multiplier } from "./Main";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,6 +73,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     assetDescription: {
       fontStyle: "italic",
+    },
+    assetStats: {
+      [theme.breakpoints.up("md")]: {
+        height: "1rem",
+      },
+      marginBottom: "1rem",
+      color: theme.palette.grey[600],
     },
     assetPrice: {
       display: "flex",
@@ -134,14 +154,25 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type AssetProps = {
   beerCount: number;
+  totalBPS: number;
+  autoClickerEnabled: boolean;
   assets: Assets;
   upgrades: Upgrades;
   buyAsset: Function;
   buyUpgrade: Function;
 };
 
+interface RichAsset extends Asset, AssetData {}
+
+interface RichUpgrade extends Upgrade, UpgradeData {}
+interface RichUpgrades {
+  [assetId: string]: RichUpgrade[];
+}
+
 const AssetsArea = ({
   beerCount,
+  totalBPS,
+  autoClickerEnabled,
   assets,
   upgrades,
   buyAsset,
@@ -149,9 +180,60 @@ const AssetsArea = ({
 }: AssetProps) => {
   const classes = useStyles();
 
+  // combine the values from available assets and asset data
+  const richAssets: RichAsset[] = Object.values(allAssets).map((assetData) => {
+    const ownedAsset = assets[assetData.id];
+    const asset: RichAsset = {
+      id: assetData.id,
+      amount: ownedAsset !== undefined ? ownedAsset.amount : 0,
+      price:
+        ownedAsset !== undefined ? ownedAsset.price : assetData.initialPrice,
+      bps: ownedAsset !== undefined ? ownedAsset.bps : 0,
+      bpc: ownedAsset !== undefined ? ownedAsset.bpc : 0,
+      status:
+        ownedAsset !== undefined ? ownedAsset.status : AssetStatus.Unavailable,
+      name: assetData.name,
+      description: assetData.description,
+      bpcCoefficient: assetData.bpcCoefficient,
+      bpsCoefficient: assetData.bpsCoefficient,
+      initialPrice: assetData.initialPrice,
+      image: assetData.image,
+    };
+    return asset;
+  });
+
+  // combine the values from available upgrades and upgrade data
+  const richUpgrades: RichUpgrades = Object.fromEntries(
+    Object.entries(allUpgrades).map(([assetId, assetUpgrades]) => {
+      const ownedUpgrades = upgrades[assetId];
+      const richAssetUpgrades = assetUpgrades.map((upgradeData) => {
+        const ownedUpgrade =
+          ownedUpgrades !== undefined
+            ? ownedUpgrades.find((owned) => owned.id === upgradeData.id)
+            : undefined;
+        const upgrade: RichUpgrade = {
+          id: upgradeData.id,
+          status:
+            ownedUpgrade !== undefined
+              ? ownedUpgrade.status
+              : UpgradeStatus.Unavailable,
+          name: upgradeData.name,
+          description: upgradeData.description,
+          multiplier: upgradeData.multiplier,
+          price: upgradeData.price,
+          availabilityRequirement: upgradeData.availabilityRequirement,
+        };
+        return upgrade;
+      });
+      return [assetId, richAssetUpgrades];
+    })
+  );
+
+  const bps = totalBPS === 0 ? 1 : totalBPS;
+
   return (
     <Grid container spacing={3} className={classes.assetList}>
-      {Object.values(assets).map(
+      {richAssets.map(
         (asset) =>
           (asset.status === AssetStatus.Available ||
             asset.status === AssetStatus.Purchased) && (
@@ -177,6 +259,15 @@ const AssetsArea = ({
                         {asset.description}
                       </p>
                     </div>
+                    <div className={classes.assetStats}>
+                      {autoClickerEnabled &&
+                        asset.status === AssetStatus.Purchased && (
+                          <div>
+                            {Math.round(asset.bps * bps_multiplier)} per second
+                            ({((asset.bps / bps) * 100).toFixed(2)}% of total)
+                          </div>
+                        )}
+                    </div>
                     <div
                       className={classNames(classes.assetPrice, {
                         disabled: asset.price > beerCount,
@@ -194,43 +285,36 @@ const AssetsArea = ({
                   <div className={classes.disabledOverlay}></div>
                 )}
               </Paper>
-              {Object.entries(upgrades).map(
-                ([assetId, assetUpgrades]) =>
-                  assetId === asset.id && (
-                    <div className={classes.upgradeList}>
-                      {assetUpgrades.map(
-                        (upgrade) =>
-                          upgrade.status === UpgradeStatus.Available && (
-                            <div
-                              key={`upgrade-${upgrade.id}`}
-                              onClick={() => buyUpgrade(upgrade, assetId)}
-                              className={classes.upgradeWrapper}
-                            >
-                              <div className={classes.upgradeContent}>
-                                <p className={classes.upgradeName}>
-                                  {upgrade.name}
-                                </p>
-                                <p className={classes.upgradeDescription}>
-                                  {upgrade.description}
-                                </p>
-                              </div>
-                              <div
-                                className={classNames(classes.upgradePrice, {
-                                  disabled: upgrade.price > beerCount,
-                                })}
-                              >
-                                <img src={coinImage} className={classes.coin} />
-                                {upgrade.price}
-                              </div>
-                              {upgrade.price > beerCount && (
-                                <div className={classes.disabledOverlay}></div>
-                              )}
-                            </div>
-                          )
-                      )}
-                    </div>
-                  )
-              )}
+              <div className={classes.upgradeList}>
+                {richUpgrades[asset.id].map(
+                  (upgrade) =>
+                    upgrade.status === UpgradeStatus.Available && (
+                      <div
+                        key={`upgrade-${upgrade.id}`}
+                        onClick={() => buyUpgrade(upgrade, asset.id)}
+                        className={classes.upgradeWrapper}
+                      >
+                        <div className={classes.upgradeContent}>
+                          <p className={classes.upgradeName}>{upgrade.name}</p>
+                          <p className={classes.upgradeDescription}>
+                            {upgrade.description}
+                          </p>
+                        </div>
+                        <div
+                          className={classNames(classes.upgradePrice, {
+                            disabled: upgrade.price > beerCount,
+                          })}
+                        >
+                          <img src={coinImage} className={classes.coin} />
+                          {upgrade.price}
+                        </div>
+                        {upgrade.price > beerCount && (
+                          <div className={classes.disabledOverlay}></div>
+                        )}
+                      </div>
+                    )
+                )}
+              </div>
             </Grid>
           )
       )}

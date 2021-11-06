@@ -1,14 +1,21 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 
-import { initialUpgrades, Upgrade, Upgrades } from "../items/upgrades";
+import {
+  allUpgrades,
+  //initialUpgrades,
+  Upgrade,
+  Upgrades,
+} from "../items/upgrades";
 import ClickerArea from "./ClickerArea";
 import AssetsArea from "./AssetsArea";
-import { Asset, Assets, initialAssets } from "../items/assets";
+import { allAssets, Asset, Assets, initialAssets } from "../items/assets";
 import {
-  calculateBPC,
-  calculateBPS,
+  calculateAssetBPC,
+  calculateAssetBPS,
+  calculateTotalBPC,
+  calculateTotalBPS,
   handleActiveUpgrades,
   handleAssetPurchaseStatuses,
   handleAvailableUpgrades,
@@ -18,25 +25,25 @@ import {
 const PRICE_MULTIPLIER = 1.15;
 const AUTOCLICKER_TRIGGER = "employee";
 const UPDATE_INTERVAL = 100;
-//const SAVE_INTERVAL = 1000 * 60 * 5; // 5 minutes
-const SAVE_INTERVAL = 1000 * 10; // 10 seconds
-const bps_multiplier = 1000 / UPDATE_INTERVAL;
+const SAVE_INTERVAL = 1000 * 60 * 1; // 1 minute
+export const bps_multiplier = 1000 / UPDATE_INTERVAL;
 
 type Save = {
   beerCount: number;
   assets: Assets;
   upgrades: Upgrades;
   autoClickerEnabled: boolean;
+  clicks: number;
 };
 
 /*
   Plan:
-  - show statistics and additional information about assets
+  - more stats (show how many)
+  - more assets and upgrades
+  - better prices and coefficients
   - format long numbers to show words (million, trillion, etc.) (also for prices)
-  - autosave into local storage (every minute or something else?) (and enable save export/import)
   - general upgrades, like beer styles (not attached to any building, multiplies the final output)
   - achievements (also keep count of different things, like: total clicks, certain BPS and BPC, etc.)
-  - how to upgrade the asset and upgrade list so that old users get the updated elements?
 */
 
 /*
@@ -52,7 +59,6 @@ const useStyles = makeStyles((theme: Theme) =>
     rootGrid: {
       marginTop: 0,
       height: "100%",
-      //alignItems: "stretch",
     },
     clickerArea: {
       color: "#fff",
@@ -66,28 +72,15 @@ const useStyles = makeStyles((theme: Theme) =>
 const Main = () => {
   const classes = useStyles();
 
-  // saving functionality
-  // create an object
-  /*
-    {
-      beerCount,
-      assets,
-      upgrades,
-      autoClickerEnabled,
-    }
-  */
-  // when loading page -> read the object and update all the states
-  // might work automatically?
-
   const [loaded, setLoaded] = useState(false);
   const [beerCount, setBeerCount] = useState(0);
   const [bpc, setBPC] = useState(1); // beer per manual click
   const [bps, setBPS] = useState(0); // beer per second (automatic)
-  const [assets, setAssets] = useState(initialAssets);
-  const [upgrades, setUpgrades] = useState(initialUpgrades);
+  //const [assets, setAssets] = useState(initialAssets);
+  const [assets, setAssets] = useState<Assets>(initialAssets);
+  const [upgrades, setUpgrades] = useState<Upgrades>({});
   const [autoClickerEnabled, setAutoclickerEnabled] = useState(false);
-  const [autoClickerIntervalActive, setAutoClickerIntervalActive] =
-    useState(false);
+  const [clicks, setClicks] = useState(0);
 
   const save = () => {
     const data: Save = {
@@ -95,6 +88,7 @@ const Main = () => {
       assets,
       upgrades,
       autoClickerEnabled,
+      clicks,
     };
     localStorage.setItem("saveData", JSON.stringify(data));
     console.log(beerCount);
@@ -103,7 +97,8 @@ const Main = () => {
 
   const click = useCallback(() => {
     setBeerCount(beerCount + bpc);
-  }, [beerCount, bpc]);
+    setClicks(clicks + 1);
+  }, [beerCount, bpc, clicks]);
 
   const autoBrew = useCallback(() => {
     if (autoClickerEnabled) {
@@ -111,13 +106,13 @@ const Main = () => {
     }
   }, [beerCount, bps, autoClickerEnabled]);
 
-  const updatePerSecondAmounts = (assets: Assets, upgrades: Upgrades) => {
+  const updatePerSecondAmounts = (assets: Assets) => {
     // calculate new bpc
-    const newBPC = calculateBPC(assets, upgrades);
+    const newBPC = calculateTotalBPC(assets);
     setBPC(newBPC);
 
     // calculate new bps
-    const newBPS = calculateBPS(assets, upgrades);
+    const newBPS = calculateTotalBPS(assets);
     setBPS(newBPS);
   };
 
@@ -128,14 +123,34 @@ const Main = () => {
       return;
     }
 
+    const assetData = allAssets[asset.id];
+    const upgradeData = allUpgrades[asset.id];
+
     // pay
     setBeerCount(beerCount - asset.price);
 
     // raise the count of that amount of assets
     assets[asset.id].amount = assets[asset.id].amount + 1;
+
     // raise price of the asset
+    // TODO: calculate the price by using amount and multipliers (compounding price)
     assets[asset.id].price = Math.round(
       assets[asset.id].price * PRICE_MULTIPLIER
+    );
+
+    // calculate the bpc and pbs here
+    assets[asset.id].bpc = calculateAssetBPC(
+      assets[asset.id],
+      upgrades,
+      assetData,
+      upgradeData
+    );
+
+    assets[asset.id].bps = calculateAssetBPS(
+      assets[asset.id],
+      upgrades,
+      assetData,
+      upgradeData
     );
 
     // activate autoClicker if needed
@@ -144,7 +159,11 @@ const Main = () => {
     }
 
     // update asset statuses if this was the first purchase of the asset
-    const statusUpdatedAssets = handleAssetPurchaseStatuses(assets, asset.id);
+    const statusUpdatedAssets = handleAssetPurchaseStatuses(
+      assets,
+      asset.id,
+      allAssets
+    );
 
     // update assets list
     setAssets(statusUpdatedAssets);
@@ -153,27 +172,51 @@ const Main = () => {
     const updatedUpgrades = handleAvailableUpgrades(
       upgrades,
       asset.id,
-      assets[asset.id].amount
+      assets[asset.id].amount,
+      allUpgrades
     );
     setUpgrades(updatedUpgrades);
 
-    updatePerSecondAmounts(assets, upgrades);
+    updatePerSecondAmounts(assets);
   };
 
   const buyUpgrade = (upgrade: Upgrade, assetId: string) => {
-    if (upgrade.price > beerCount) {
+    const assetUpgrades = allUpgrades[assetId];
+    const assetUpgradeData = assetUpgrades.find(
+      (assetUpgrade) => assetUpgrade.id === upgrade.id
+    );
+    if (assetUpgradeData === undefined || assetUpgradeData.price > beerCount) {
       console.log("Can't afford");
       return;
     }
 
     // pay
-    setBeerCount(beerCount - upgrade.price);
+    setBeerCount(beerCount - assetUpgradeData.price);
 
     // change the upgrade status to active
     const updatedUpgrades = handleActiveUpgrades(upgrades, upgrade.id, assetId);
+    console.log(updatedUpgrades);
     setUpgrades(updatedUpgrades);
 
-    updatePerSecondAmounts(assets, upgrades);
+    const assetData = allAssets[assetId];
+    const upgradeData = allUpgrades[assetId];
+
+    assets[assetId].bpc = calculateAssetBPC(
+      assets[assetId],
+      upgrades,
+      assetData,
+      upgradeData
+    );
+
+    assets[assetId].bps = calculateAssetBPS(
+      assets[assetId],
+      upgrades,
+      assetData,
+      upgradeData
+    );
+    setAssets(assets);
+
+    updatePerSecondAmounts(assets);
   };
 
   const enableAutoClicker = () => {
@@ -190,8 +233,9 @@ const Main = () => {
         setAssets(data.assets);
         setUpgrades(data.upgrades);
         setAutoclickerEnabled(data.autoClickerEnabled);
+        setClicks(data.clicks);
 
-        updatePerSecondAmounts(data.assets, data.upgrades);
+        updatePerSecondAmounts(data.assets);
       }
       setLoaded(true);
     }
@@ -213,20 +257,20 @@ const Main = () => {
           bpc={bpc}
           bps={bps}
           autoClickerEnabled={autoClickerEnabled}
-          bps_multiplier={bps_multiplier}
           click={click}
         />
       </Grid>
       <Grid item md={8} xs={12}>
         <AssetsArea
           beerCount={beerCount}
+          totalBPS={bps}
           assets={assets}
           upgrades={upgrades}
+          autoClickerEnabled={autoClickerEnabled}
           buyAsset={buyAsset}
           buyUpgrade={buyUpgrade}
         />
       </Grid>
-      <div onClick={save}>Save</div>
     </Grid>
   );
 };

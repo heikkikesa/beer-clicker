@@ -1,5 +1,6 @@
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import beerImage from "../images/beer.svg";
+import { bps_multiplier } from "./Main";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -11,6 +12,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: 150,
       height: 150,
       cursor: "pointer",
+      userDrag: "none",
       transitionDuration: ".05s",
       "&:active": {
         transform: "scale(.9)",
@@ -32,7 +34,6 @@ type ClickerAreaProps = {
   bpc: number;
   bps: number;
   autoClickerEnabled: boolean;
-  bps_multiplier: number;
   click: Function;
 };
 
@@ -41,7 +42,6 @@ const ClickerArea = ({
   bpc,
   bps,
   autoClickerEnabled,
-  bps_multiplier,
   click,
 }: ClickerAreaProps) => {
   const classes = useStyles();
