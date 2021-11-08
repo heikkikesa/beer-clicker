@@ -55,7 +55,6 @@ export const allAssets: AssetDatas = {
     bpcCoefficient: 5,
     bpsCoefficient: 0.5,
     initialPrice: 450,
-    //initialPrice: 45,
     image: brewSystemImage,
   },
   employee: {
@@ -65,7 +64,6 @@ export const allAssets: AssetDatas = {
     bpcCoefficient: 6,
     bpsCoefficient: 1,
     initialPrice: 2500,
-    //initialPrice: 250,
     image: employeeImage,
   },
   microbrewery: {

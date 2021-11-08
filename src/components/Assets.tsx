@@ -18,15 +18,12 @@ import {
   UpgradeStatus,
 } from "../items/upgrades";
 import { bps_multiplier } from "./Main";
+import { formatLongNumber } from "../helpers/functions";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    assetList: {
-      //backgroundColor: theme.palette.background.paper,
-      //color: theme.palette.text.primary,
-    },
+    assetList: {},
     assetItem: {
-      //marginBottom: theme.spacing(2),
       userSelect: "none",
     },
     assetPaper: {
@@ -34,11 +31,6 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: "auto",
       position: "relative",
       cursor: "pointer",
-      /*
-      "&:hover": {
-        boxShadow: theme.shadows[6],
-      },
-      */
       backgroundColor: theme.palette.common.white,
       color: theme.palette.primary.contrastText,
       zIndex: 10,
@@ -64,10 +56,7 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: "100%",
       maxHeight: "100%",
     },
-    assetTexts: {
-      //paddingLeft: theme.spacing(2),
-      //width: "50%",
-    },
+    assetTexts: {},
     assetName: {
       fontWeight: theme.typography.fontWeightBold,
     },
@@ -134,7 +123,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     upgradeContent: {},
     upgradeName: {
-      //fontSize: "1.2rem",
       fontWeight: theme.typography.fontWeightBold,
       margin: 0,
     },
@@ -169,7 +157,7 @@ interface RichUpgrades {
   [assetId: string]: RichUpgrade[];
 }
 
-const AssetsArea = ({
+const AssetsComponent = ({
   beerCount,
   totalBPS,
   autoClickerEnabled,
@@ -263,8 +251,11 @@ const AssetsArea = ({
                       {autoClickerEnabled &&
                         asset.status === AssetStatus.Purchased && (
                           <div>
-                            {Math.round(asset.bps * bps_multiplier)} per second
-                            ({((asset.bps / bps) * 100).toFixed(2)}% of total)
+                            {formatLongNumber(
+                              Math.round(asset.bps * bps_multiplier)
+                            )}{" "}
+                            per second ({((asset.bps / bps) * 100).toFixed(2)}%
+                            of total)
                           </div>
                         )}
                     </div>
@@ -274,7 +265,7 @@ const AssetsArea = ({
                       })}
                     >
                       <img src={coinImage} className={classes.coin} />
-                      {asset.price}
+                      {formatLongNumber(asset.price)}
                     </div>
                   </Grid>
                   <Grid item xs={3} md={2} className={classes.amountWrapper}>
@@ -306,7 +297,7 @@ const AssetsArea = ({
                           })}
                         >
                           <img src={coinImage} className={classes.coin} />
-                          {upgrade.price}
+                          {formatLongNumber(upgrade.price)}
                         </div>
                         {upgrade.price > beerCount && (
                           <div className={classes.disabledOverlay}></div>
@@ -322,4 +313,4 @@ const AssetsArea = ({
   );
 };
 
-export default AssetsArea;
+export default AssetsComponent;

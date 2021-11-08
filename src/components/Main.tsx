@@ -2,14 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 
-import {
-  allUpgrades,
-  //initialUpgrades,
-  Upgrade,
-  Upgrades,
-} from "../items/upgrades";
-import ClickerArea from "./ClickerArea";
-import AssetsArea from "./AssetsArea";
+import { allUpgrades, Upgrade, Upgrades } from "../items/upgrades";
+import ClickerComponent from "./Clicker";
+import AssetsComponent from "./Assets";
 import { allAssets, Asset, Assets, initialAssets } from "../items/assets";
 import {
   calculateAssetBPC,
@@ -21,6 +16,8 @@ import {
   handleAvailableUpgrades,
   useInterval,
 } from "../helpers/functions";
+import { allGeneralUpgrades, GeneralUpgrade } from "../items/generalUpgrades";
+import GeneralUpgradesComponent from "./GeneralUpgrades";
 
 const PRICE_MULTIPLIER = 1.15;
 const AUTOCLICKER_TRIGGER = "employee";
@@ -32,26 +29,33 @@ type Save = {
   beerCount: number;
   assets: Assets;
   upgrades: Upgrades;
+  generalUpgrades: GeneralUpgrade[];
   autoClickerEnabled: boolean;
   clicks: number;
 };
 
 /*
   Plan:
-  - more stats (show how many)
-  - more assets and upgrades
+  - IN PROGRESS: general upgrades, like beer styles (not attached to any building, multiplies the final output)
+  - more assets and upgrades (requires buying icons)
   - better prices and coefficients
-  - format long numbers to show words (million, trillion, etc.) (also for prices)
-  - general upgrades, like beer styles (not attached to any building, multiplies the final output)
+  - Firebase hosting
+  - more stats (show how many)
+  - click amount when clicking
   - achievements (also keep count of different things, like: total clicks, certain BPS and BPC, etc.)
 */
 
 /*
-  multipliers:
-  cursor: 50: 16255
-  mine: 18: 148506
-  factory: 2: 171925 3: 197714 4: 227371 5: 261477 12: 695533
-  factory 2->3 25789 3->4 29657 4->5 34106
+  Continue from here:
+    Finalize general upgrades.
+    Prevent buying if already active (by disabling in UI and then checking in buy function).
+    The styling.
+*/
+
+// icon attributions
+/*
+  <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+  <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 */
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -76,9 +80,9 @@ const Main = () => {
   const [beerCount, setBeerCount] = useState(0);
   const [bpc, setBPC] = useState(1); // beer per manual click
   const [bps, setBPS] = useState(0); // beer per second (automatic)
-  //const [assets, setAssets] = useState(initialAssets);
   const [assets, setAssets] = useState<Assets>(initialAssets);
   const [upgrades, setUpgrades] = useState<Upgrades>({});
+  const [generalUpgrades, setGeneralUpgrades] = useState<GeneralUpgrade[]>([]);
   const [autoClickerEnabled, setAutoclickerEnabled] = useState(false);
   const [clicks, setClicks] = useState(0);
 
@@ -87,6 +91,7 @@ const Main = () => {
       beerCount,
       assets,
       upgrades,
+      generalUpgrades,
       autoClickerEnabled,
       clicks,
     };
@@ -141,16 +146,20 @@ const Main = () => {
     // calculate the bpc and pbs here
     assets[asset.id].bpc = calculateAssetBPC(
       assets[asset.id],
-      upgrades,
       assetData,
-      upgradeData
+      upgrades,
+      upgradeData,
+      generalUpgrades,
+      allGeneralUpgrades
     );
 
     assets[asset.id].bps = calculateAssetBPS(
       assets[asset.id],
-      upgrades,
       assetData,
-      upgradeData
+      upgrades,
+      upgradeData,
+      generalUpgrades,
+      allGeneralUpgrades
     );
 
     // activate autoClicker if needed
@@ -195,7 +204,6 @@ const Main = () => {
 
     // change the upgrade status to active
     const updatedUpgrades = handleActiveUpgrades(upgrades, upgrade.id, assetId);
-    console.log(updatedUpgrades);
     setUpgrades(updatedUpgrades);
 
     const assetData = allAssets[assetId];
@@ -203,20 +211,85 @@ const Main = () => {
 
     assets[assetId].bpc = calculateAssetBPC(
       assets[assetId],
-      upgrades,
       assetData,
-      upgradeData
+      upgrades,
+      upgradeData,
+      generalUpgrades,
+      allGeneralUpgrades
     );
 
     assets[assetId].bps = calculateAssetBPS(
       assets[assetId],
-      upgrades,
       assetData,
-      upgradeData
+      upgrades,
+      upgradeData,
+      generalUpgrades,
+      allGeneralUpgrades
     );
     setAssets(assets);
 
     updatePerSecondAmounts(assets);
+  };
+
+  const buyGeneralUpgrade = (id: string) => {
+    console.log("bought general upgrade", id);
+    const upgradeData = allGeneralUpgrades.find((upgrade) => upgrade.id === id);
+    if (upgradeData === undefined) {
+      return;
+    }
+    /*
+      TODO: also check if it is already bought
+    */
+
+    if (upgradeData.price > beerCount) {
+      console.log("Can't afford");
+      return;
+    }
+
+    // pay
+    setBeerCount(beerCount - upgradeData.price);
+
+    const updatedGeneralUpgrades: GeneralUpgrade[] = [
+      ...generalUpgrades,
+      { id, active: true } as GeneralUpgrade,
+    ];
+
+    // add to list
+    setGeneralUpgrades(updatedGeneralUpgrades);
+
+    // iterate over assets and calculate new speeds
+    const recalculatedAssets: Assets = Object.fromEntries(
+      Object.entries(assets).map(([assetId, asset]) => {
+        const assetData = allAssets[assetId];
+        const upgradeData = allUpgrades[assetId];
+        const bps = calculateAssetBPS(
+          asset,
+          assetData,
+          upgrades,
+          upgradeData,
+          generalUpgrades,
+          allGeneralUpgrades
+        );
+        const bpc = calculateAssetBPC(
+          asset,
+          assetData,
+          upgrades,
+          upgradeData,
+          generalUpgrades,
+          allGeneralUpgrades
+        );
+        const updatedAsset: Asset = {
+          ...asset,
+          bps,
+          bpc,
+        };
+        return [assetId, updatedAsset];
+      })
+    );
+    setAssets(recalculatedAssets);
+
+    // update total speed
+    updatePerSecondAmounts(recalculatedAssets);
   };
 
   const enableAutoClicker = () => {
@@ -232,6 +305,7 @@ const Main = () => {
         setBeerCount(data.beerCount);
         setAssets(data.assets);
         setUpgrades(data.upgrades);
+        setGeneralUpgrades(data.generalUpgrades);
         setAutoclickerEnabled(data.autoClickerEnabled);
         setClicks(data.clicks);
 
@@ -252,16 +326,21 @@ const Main = () => {
   return (
     <Grid container spacing={3} className={classes.rootGrid}>
       <Grid item md={4} xs={12} className={classes.clickerArea}>
-        <ClickerArea
+        <ClickerComponent
           beerCount={beerCount}
           bpc={bpc}
           bps={bps}
           autoClickerEnabled={autoClickerEnabled}
           click={click}
         />
+        <GeneralUpgradesComponent
+          beerCount={beerCount}
+          generalUpgrades={generalUpgrades}
+          buyGeneralUpgrade={buyGeneralUpgrade}
+        />
       </Grid>
       <Grid item md={8} xs={12}>
-        <AssetsArea
+        <AssetsComponent
           beerCount={beerCount}
           totalBPS={bps}
           assets={assets}

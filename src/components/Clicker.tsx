@@ -1,4 +1,5 @@
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { formatLongNumber } from "../helpers/functions";
 import beerImage from "../images/beer.svg";
 import { bps_multiplier } from "./Main";
 
@@ -7,6 +8,7 @@ const useStyles = makeStyles((theme: Theme) =>
     beerImageContainer: {
       padding: theme.spacing(2),
       userSelect: "none",
+      position: "relative",
     },
     beerImage: {
       width: 150,
@@ -17,6 +19,9 @@ const useStyles = makeStyles((theme: Theme) =>
       "&:active": {
         transform: "scale(.9)",
       },
+    },
+    clickCount: {
+      display: "none",
     },
     total: {
       fontFamily: "Vollkorn,serif",
@@ -29,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type ClickerAreaProps = {
+type ClickerProps = {
   beerCount: number;
   bpc: number;
   bps: number;
@@ -37,19 +42,22 @@ type ClickerAreaProps = {
   click: Function;
 };
 
-const ClickerArea = ({
+const ClickerComponent = ({
   beerCount,
   bpc,
   bps,
   autoClickerEnabled,
   click,
-}: ClickerAreaProps) => {
+}: ClickerProps) => {
   const classes = useStyles();
+
+  const count = formatLongNumber(beerCount);
 
   return (
     <>
-      <div className={classes.total}>{Math.round(beerCount)}</div>
+      <div className={classes.total}>{count}</div>
       <div className={classes.beerImageContainer}>
+        <div className={classes.clickCount}>{bpc}</div>
         <img
           className={classes.beerImage}
           src={beerImage}
@@ -57,7 +65,6 @@ const ClickerArea = ({
           onClick={() => click()}
         />
       </div>
-      {/*<div>Beers-per-Click: {bpc}</div>*/}
       {autoClickerEnabled && (
         <div className={classes.perSecond}>
           {Math.round(bps * bps_multiplier)} per second
@@ -67,4 +74,4 @@ const ClickerArea = ({
   );
 };
 
-export default ClickerArea;
+export default ClickerComponent;
