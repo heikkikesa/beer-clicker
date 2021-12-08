@@ -91,7 +91,7 @@ export const allUpgrades: UpgradeDatas = {
       multiplier: 1.5,
       price: 2000000,
       name: "Wider sowers",
-      description: "",
+      description: "Sow 50% more grain",
       availabilityRequirement: 10,
     },
   ],

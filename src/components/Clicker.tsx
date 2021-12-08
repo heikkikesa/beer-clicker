@@ -1,4 +1,12 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  useTheme,
+  withStyles,
+} from "@material-ui/core/styles";
+import Tooltip from "@material-ui/core/Tooltip";
+import { useEffect, useState } from "react";
 import { formatLongNumber } from "../helpers/functions";
 import beerImage from "../images/beer.svg";
 import { bps_multiplier } from "./Main";
@@ -27,6 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontFamily: "Vollkorn,serif",
       fontSize: "3rem",
       color: theme.palette.primary.main,
+      marginTop: "1rem",
     },
     perSecond: {
       fontSize: "1.2rem",
@@ -40,6 +49,7 @@ type ClickerProps = {
   bps: number;
   autoClickerEnabled: boolean;
   click: Function;
+  showTooltip: boolean;
 };
 
 const ClickerComponent = ({
@@ -48,29 +58,57 @@ const ClickerComponent = ({
   bps,
   autoClickerEnabled,
   click,
+  showTooltip,
 }: ClickerProps) => {
   const classes = useStyles();
-
+  const theme = useTheme() as Theme;
+  const [isDesktop, setIsDesktop] = useState<boolean>(false);
   const count = formatLongNumber(beerCount);
 
+  useEffect(() => {
+    if (window.innerWidth >= theme.breakpoints.values.md) {
+      setIsDesktop(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const ClickMeTooltip = withStyles((theme: Theme) => ({
+    tooltip: {
+      fontSize: "2rem",
+      color: theme.palette.primary.main,
+      fontFamily: "Vollkorn,serif",
+      fontWeight: "bold",
+      padding: "1rem",
+      paddingTop: "1.25rem",
+      top: "1rem",
+    },
+  }))(Tooltip);
+
   return (
-    <>
+    <div>
       <div className={classes.total}>{count}</div>
       <div className={classes.beerImageContainer}>
         <div className={classes.clickCount}>{bpc}</div>
-        <img
-          className={classes.beerImage}
-          src={beerImage}
-          alt="ebin"
-          onClick={() => click()}
-        />
+        <ClickMeTooltip
+          title="Click me!"
+          placement={isDesktop ? "left" : "bottom"}
+          arrow
+          open={showTooltip}
+        >
+          <img
+            className={classes.beerImage}
+            src={beerImage}
+            alt="ebin"
+            onClick={() => click()}
+          />
+        </ClickMeTooltip>
       </div>
       {autoClickerEnabled && (
         <div className={classes.perSecond}>
           {Math.round(bps * bps_multiplier)} per second
         </div>
       )}
-    </>
+    </div>
   );
 };
 

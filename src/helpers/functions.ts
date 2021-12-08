@@ -359,8 +359,13 @@ export const formatLongNumber = (number: number): string => {
     const largeNumberIndex = Math.floor(length / 3) - 2;
 
     const baseNumber = Math.pow(10, largeNumbers[largeNumberIndex].zeros); // create the base number (million = 1000000)
-    const shortNumber = (number / baseNumber).toFixed(2); // 24134564 => 24.13
-    return `${shortNumber} million`;
+    const shortResult = number / baseNumber;
+    // Don't show decimals if value is Int
+    const shortNumber = Number.isInteger(shortResult)
+      ? shortResult
+      : shortResult.toFixed(2); // 24134564 => 24.13
+    const suffix = largeNumbers[largeNumberIndex].name;
+    return `${shortNumber} ${suffix}`;
   }
   return Math.round(number).toString();
 };

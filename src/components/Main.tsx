@@ -96,8 +96,6 @@ const Main = () => {
       clicks,
     };
     localStorage.setItem("saveData", JSON.stringify(data));
-    console.log(beerCount);
-    console.log("saved");
   };
 
   const click = useCallback(() => {
@@ -124,7 +122,7 @@ const Main = () => {
   const buyAsset = (asset: Asset) => {
     // buying should also cost something
     if (asset.price > beerCount) {
-      console.log("Can't afford"); // TODO: show alert or something (also the possibility to buy should be disabled)
+      console.log("Can't afford");
       return;
     }
 
@@ -138,7 +136,6 @@ const Main = () => {
     assets[asset.id].amount = assets[asset.id].amount + 1;
 
     // raise price of the asset
-    // TODO: calculate the price by using amount and multipliers (compounding price)
     assets[asset.id].price = Math.round(
       assets[asset.id].price * PRICE_MULTIPLIER
     );
@@ -232,17 +229,20 @@ const Main = () => {
   };
 
   const buyGeneralUpgrade = (id: string) => {
-    console.log("bought general upgrade", id);
     const upgradeData = allGeneralUpgrades.find((upgrade) => upgrade.id === id);
     if (upgradeData === undefined) {
       return;
     }
-    /*
-      TODO: also check if it is already bought
-    */
 
     if (upgradeData.price > beerCount) {
       console.log("Can't afford");
+      return;
+    }
+
+    // check if already bought
+    const bought = generalUpgrades.some((upgrade) => upgrade.id === id);
+    if (bought) {
+      console.log("Already owned");
       return;
     }
 
@@ -267,7 +267,7 @@ const Main = () => {
           assetData,
           upgrades,
           upgradeData,
-          generalUpgrades,
+          updatedGeneralUpgrades,
           allGeneralUpgrades
         );
         const bpc = calculateAssetBPC(
@@ -275,7 +275,7 @@ const Main = () => {
           assetData,
           upgrades,
           upgradeData,
-          generalUpgrades,
+          updatedGeneralUpgrades,
           allGeneralUpgrades
         );
         const updatedAsset: Asset = {
@@ -332,6 +332,7 @@ const Main = () => {
           bps={bps}
           autoClickerEnabled={autoClickerEnabled}
           click={click}
+          showTooltip={clicks < 5}
         />
         <GeneralUpgradesComponent
           beerCount={beerCount}

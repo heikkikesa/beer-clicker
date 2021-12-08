@@ -22,6 +22,16 @@ import { formatLongNumber } from "../helpers/functions";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    header: {
+      padding: "1rem",
+      textAlign: "center",
+    },
+    title: {
+      fontFamily: "Vollkorn,serif",
+      fontSize: "2rem",
+      color: theme.palette.primary.main,
+    },
+    description: {},
     assetList: {},
     assetItem: {
       userSelect: "none",
@@ -49,6 +59,19 @@ const useStyles = makeStyles((theme: Theme) =>
       background: "rgba(0, 0, 0, 0.5)",
       borderRadius: theme.shape.borderRadius,
     },
+    upgradeIndicators: {
+      display: "flex",
+      position: "absolute",
+      right: "0.5rem",
+      top: "0.5rem",
+      gap: "0.25rem",
+    },
+    upgradeIndicator: {
+      height: 10,
+      width: 10,
+      backgroundColor: theme.palette.primary.main,
+      borderRadius: "50%",
+    },
     imageWrapper: {
       display: "flex",
     },
@@ -56,18 +79,21 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: "100%",
       maxHeight: "100%",
     },
-    assetTexts: {},
+    assetTexts: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.5rem",
+    },
     assetName: {
-      fontWeight: theme.typography.fontWeightBold,
+      fontWeight: "bold",
     },
     assetDescription: {
       fontStyle: "italic",
     },
     assetStats: {
       [theme.breakpoints.up("md")]: {
-        height: "1rem",
+        height: "1.25rem",
       },
-      marginBottom: "1rem",
       color: theme.palette.grey[600],
     },
     assetPrice: {
@@ -104,6 +130,9 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: "auto",
       marginRight: "auto",
       zIndex: 0,
+      "&.disabled": {
+        backgroundColor: theme.palette.primary.dark,
+      },
     },
     upgradeWrapper: {
       position: "relative",
@@ -123,7 +152,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     upgradeContent: {},
     upgradeName: {
-      fontWeight: theme.typography.fontWeightBold,
+      fontWeight: "bold",
       margin: 0,
     },
     upgradeDescription: {
@@ -220,96 +249,116 @@ const AssetsComponent = ({
   const bps = totalBPS === 0 ? 1 : totalBPS;
 
   return (
-    <Grid container spacing={3} className={classes.assetList}>
-      {richAssets.map(
-        (asset) =>
-          (asset.status === AssetStatus.Available ||
-            asset.status === AssetStatus.Purchased) && (
-            <Grid
-              item
-              xs={12}
-              md={6}
-              key={asset.id}
-              className={classes.assetItem}
-            >
-              <Paper
-                className={classes.assetPaper}
-                onClick={() => buyAsset(assets[asset.id])}
+    <div>
+      <div className={classes.header}>
+        <div className={classes.title}>Upgrades</div>
+      </div>
+      <Grid container spacing={3} className={classes.assetList}>
+        {richAssets.map(
+          (asset) =>
+            (asset.status === AssetStatus.Available ||
+              asset.status === AssetStatus.Purchased) && (
+              <Grid
+                item
+                xs={12}
+                md={6}
+                key={asset.id}
+                className={classes.assetItem}
               >
-                <Grid container spacing={3}>
-                  <Grid item xs={3} md={2} className={classes.imageWrapper}>
-                    <img className={classes.assetImage} src={asset.image} />
-                  </Grid>
-                  <Grid item xs={6} md={8}>
-                    <div className={classes.assetTexts}>
-                      <p className={classes.assetName}>{asset.name}</p>
-                      <p className={classes.assetDescription}>
+                <Paper
+                  className={classes.assetPaper}
+                  onClick={() => buyAsset(assets[asset.id])}
+                >
+                  <div className={classes.upgradeIndicators}>
+                    {richUpgrades[asset.id].map(
+                      (upgrade, key) =>
+                        upgrade.status === UpgradeStatus.Active && (
+                          <div
+                            className={classes.upgradeIndicator}
+                            key={`upgrade-${asset.id}-${key}`}
+                          ></div>
+                        )
+                    )}
+                  </div>
+                  <Grid container spacing={3}>
+                    <Grid item xs={3} md={2} className={classes.imageWrapper}>
+                      <img className={classes.assetImage} src={asset.image} />
+                    </Grid>
+                    <Grid item xs={6} md={8} className={classes.assetTexts}>
+                      <div className={classes.assetName}>{asset.name}</div>
+                      <div className={classes.assetDescription}>
                         {asset.description}
-                      </p>
-                    </div>
-                    <div className={classes.assetStats}>
-                      {autoClickerEnabled &&
-                        asset.status === AssetStatus.Purchased && (
-                          <div>
-                            {formatLongNumber(
-                              Math.round(asset.bps * bps_multiplier)
-                            )}{" "}
-                            per second ({((asset.bps / bps) * 100).toFixed(2)}%
-                            of total)
-                          </div>
-                        )}
-                    </div>
-                    <div
-                      className={classNames(classes.assetPrice, {
-                        disabled: asset.price > beerCount,
-                      })}
-                    >
-                      <img src={coinImage} className={classes.coin} />
-                      {formatLongNumber(asset.price)}
-                    </div>
-                  </Grid>
-                  <Grid item xs={3} md={2} className={classes.amountWrapper}>
-                    <div className={classes.assetAmount}>{asset.amount}</div>
-                  </Grid>
-                </Grid>
-                {asset.price > beerCount && (
-                  <div className={classes.disabledOverlay}></div>
-                )}
-              </Paper>
-              <div className={classes.upgradeList}>
-                {richUpgrades[asset.id].map(
-                  (upgrade) =>
-                    upgrade.status === UpgradeStatus.Available && (
-                      <div
-                        key={`upgrade-${upgrade.id}`}
-                        onClick={() => buyUpgrade(upgrade, asset.id)}
-                        className={classes.upgradeWrapper}
-                      >
-                        <div className={classes.upgradeContent}>
-                          <p className={classes.upgradeName}>{upgrade.name}</p>
-                          <p className={classes.upgradeDescription}>
-                            {upgrade.description}
-                          </p>
-                        </div>
-                        <div
-                          className={classNames(classes.upgradePrice, {
-                            disabled: upgrade.price > beerCount,
-                          })}
-                        >
-                          <img src={coinImage} className={classes.coin} />
-                          {formatLongNumber(upgrade.price)}
-                        </div>
-                        {upgrade.price > beerCount && (
-                          <div className={classes.disabledOverlay}></div>
-                        )}
                       </div>
-                    )
-                )}
-              </div>
-            </Grid>
-          )
-      )}
-    </Grid>
+                      <div className={classes.assetStats}>
+                        {autoClickerEnabled &&
+                          asset.status === AssetStatus.Purchased && (
+                            <div>
+                              {formatLongNumber(
+                                Math.round(asset.bps * bps_multiplier)
+                              )}{" "}
+                              / second ({((asset.bps / bps) * 100).toFixed(2)}%
+                              of total)
+                            </div>
+                          )}
+                      </div>
+                      <div
+                        className={classNames(classes.assetPrice, {
+                          disabled: asset.price > beerCount,
+                        })}
+                      >
+                        <img src={coinImage} className={classes.coin} />
+                        {formatLongNumber(asset.price)}
+                      </div>
+                    </Grid>
+                    <Grid item xs={3} md={2} className={classes.amountWrapper}>
+                      <div className={classes.assetAmount}>{asset.amount}</div>
+                    </Grid>
+                  </Grid>
+                  {asset.price > beerCount && (
+                    <div className={classes.disabledOverlay}></div>
+                  )}
+                </Paper>
+                <div
+                  className={classNames(classes.upgradeList, {
+                    disabled: asset.price > beerCount,
+                  })}
+                >
+                  {richUpgrades[asset.id].map(
+                    (upgrade) =>
+                      upgrade.status === UpgradeStatus.Available && (
+                        <div
+                          key={`upgrade-${upgrade.id}`}
+                          onClick={() => buyUpgrade(upgrade, asset.id)}
+                          className={classes.upgradeWrapper}
+                        >
+                          <div className={classes.upgradeContent}>
+                            <p className={classes.upgradeName}>
+                              {upgrade.name}
+                            </p>
+                            <p className={classes.upgradeDescription}>
+                              {upgrade.description}
+                            </p>
+                          </div>
+                          <div
+                            className={classNames(classes.upgradePrice, {
+                              disabled: upgrade.price > beerCount,
+                            })}
+                          >
+                            <img src={coinImage} className={classes.coin} />
+                            {formatLongNumber(upgrade.price)}
+                          </div>
+                          {upgrade.price > beerCount && (
+                            <div className={classes.disabledOverlay}></div>
+                          )}
+                        </div>
+                      )
+                  )}
+                </div>
+              </Grid>
+            )
+        )}
+      </Grid>
+    </div>
   );
 };
 
