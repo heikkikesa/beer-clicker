@@ -1,6 +1,8 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
+import { Theme } from "@mui/material/styles";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
 import classNames from "classnames";
 import {
   Asset,
@@ -28,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     title: {
       fontFamily: "Vollkorn,serif",
-      fontSize: "2rem",
+      fontSize: "2.25rem",
       color: theme.palette.primary.main,
     },
     description: {},
@@ -92,7 +94,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     assetStats: {
       [theme.breakpoints.up("md")]: {
-        height: "1.25rem",
+        height: "1.5rem",
       },
       color: theme.palette.grey[600],
     },
@@ -108,6 +110,9 @@ const useStyles = makeStyles((theme: Theme) =>
       height: 20,
       paddingRight: theme.spacing(1),
     },
+    price: {
+      marginTop: 2,
+    },
     amountWrapper: {
       display: "flex",
       alignItems: "center",
@@ -119,7 +124,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     upgradeList: {
       backgroundColor: theme.palette.primary.main,
-      marginTop: -theme.spacing(1),
+      marginTop: theme.spacing(-1),
       borderRadius: theme.shape.borderRadius,
       color: theme.palette.common.black,
       paddingTop: theme.spacing(2),
@@ -307,7 +312,9 @@ const AssetsComponent = ({
                         })}
                       >
                         <img src={coinImage} className={classes.coin} />
-                        {formatLongNumber(asset.price)}
+                        <div className={classes.price}>
+                          {formatLongNumber(asset.price)}
+                        </div>
                       </div>
                     </Grid>
                     <Grid item xs={3} md={2} className={classes.amountWrapper}>
@@ -345,7 +352,9 @@ const AssetsComponent = ({
                             })}
                           >
                             <img src={coinImage} className={classes.coin} />
-                            {formatLongNumber(upgrade.price)}
+                            <div className={classes.price}>
+                              {formatLongNumber(upgrade.price)}
+                            </div>
                           </div>
                           {upgrade.price > beerCount && (
                             <div className={classes.disabledOverlay}></div>

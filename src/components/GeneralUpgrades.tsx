@@ -1,4 +1,6 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Theme } from "@mui/material/styles";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import classNames from "classnames";
 import { formatLongNumber } from "../helpers/functions";
 import {
@@ -7,12 +9,12 @@ import {
   GeneralUpgradeData,
 } from "../items/generalUpgrades";
 import coinImage from "../images/money.svg";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { AccordionDetails } from "@material-ui/core";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { AccordionDetails } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useTheme } from "@material-ui/styles";
+import { useTheme } from "@mui/styles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     title: {
       fontFamily: "Vollkorn,serif",
-      fontSize: "2rem",
+      fontSize: "2.25rem",
       color: theme.palette.primary.main,
     },
     description: {},

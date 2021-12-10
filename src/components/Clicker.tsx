@@ -1,11 +1,8 @@
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  useTheme,
-  withStyles,
-} from "@material-ui/core/styles";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Theme, useTheme } from "@mui/material/styles";
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import withStyles from "@mui/styles/withStyles";
+import Tooltip from "@mui/material/Tooltip";
 import { useEffect, useState } from "react";
 import { formatLongNumber } from "../helpers/functions";
 import beerImage from "../images/beer.svg";

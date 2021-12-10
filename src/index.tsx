@@ -1,20 +1,24 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { createTheme, StyledEngineProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import createTheme from "@material-ui/core/styles/createTheme";
-import ThemeProvider from "@material-ui/styles/ThemeProvider";
 
 const theme = createTheme({
   palette: {
-    type: "dark",
+    mode: "dark",
     primary: {
       main: "#ffc107",
     },
     secondary: {
       main: "#64b5f6",
+    },
+    background: {
+      default: "#303030",
+      paper: "#424242",
     },
   },
   typography: {
@@ -24,11 +28,13 @@ const theme = createTheme({
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline>
-        <App />
-      </CssBaseline>
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <CssBaseline>
+          <App />
+        </CssBaseline>
+      </ThemeProvider>
+    </StyledEngineProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
