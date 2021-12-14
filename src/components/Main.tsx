@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Theme } from "@mui/material/styles";
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import createStyles from "@mui/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
 import Grid from "@mui/material/Grid";
 
 import { allUpgrades, Upgrade, Upgrades } from "../items/upgrades";
@@ -37,27 +37,11 @@ type Save = {
 };
 
 /*
-  Plan:
-  - IN PROGRESS: general upgrades, like beer styles (not attached to any building, multiplies the final output)
-  - more assets and upgrades (requires buying icons)
-  - better prices and coefficients
-  - Firebase hosting
-  - more stats (show how many)
-  - click amount when clicking
-  - achievements (also keep count of different things, like: total clicks, certain BPS and BPC, etc.)
-*/
-
-/*
-  Continue from here:
-    Finalize general upgrades.
-    Prevent buying if already active (by disabling in UI and then checking in buy function).
-    The styling.
-*/
-
-// icon attributions
-/*
-  <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-  <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+  TODO:
+  - find out what are the most CPU intensive parts and refactor
+  - less intensive way to use "click me!" and "buy me!" tooltips
+  - count the total beerCount when resuming (browsers stop it if not in active tab)
+  - achievements (also keep count of different things, like: total clicks (done), certain BPS and BPC, etc.)
 */
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -71,6 +55,9 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: "center",
       display: "flex",
       flexDirection: "column",
+    },
+    assetsArea: {
+      paddingBottom: theme.spacing(3),
     },
   })
 );
@@ -342,7 +329,7 @@ const Main = () => {
           buyGeneralUpgrade={buyGeneralUpgrade}
         />
       </Grid>
-      <Grid item md={8} xs={12}>
+      <Grid item md={8} xs={12} className={classes.assetsArea}>
         <AssetsComponent
           beerCount={beerCount}
           totalBPS={bps}

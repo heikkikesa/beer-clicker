@@ -1,9 +1,6 @@
-import { Theme, useTheme } from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
 import createStyles from "@mui/styles/createStyles";
 import makeStyles from "@mui/styles/makeStyles";
-import withStyles from "@mui/styles/withStyles";
-import Tooltip from "@mui/material/Tooltip";
-import { useEffect, useState } from "react";
 import { formatLongNumber } from "../helpers/functions";
 import beerImage from "../images/beer.svg";
 import { bps_multiplier } from "./Main";
@@ -58,47 +55,19 @@ const ClickerComponent = ({
   showTooltip,
 }: ClickerProps) => {
   const classes = useStyles();
-  const theme = useTheme() as Theme;
-  const [isDesktop, setIsDesktop] = useState<boolean>(false);
   const count = formatLongNumber(beerCount);
-
-  useEffect(() => {
-    if (window.innerWidth >= theme.breakpoints.values.md) {
-      setIsDesktop(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const ClickMeTooltip = withStyles((theme: Theme) => ({
-    tooltip: {
-      fontSize: "2rem",
-      color: theme.palette.primary.main,
-      fontFamily: "Vollkorn,serif",
-      fontWeight: "bold",
-      padding: "1rem",
-      paddingTop: "1.25rem",
-      top: "1rem",
-    },
-  }))(Tooltip);
 
   return (
     <div>
       <div className={classes.total}>{count}</div>
       <div className={classes.beerImageContainer}>
         <div className={classes.clickCount}>{bpc}</div>
-        <ClickMeTooltip
-          title="Click me!"
-          placement={isDesktop ? "left" : "bottom"}
-          arrow
-          open={showTooltip}
-        >
-          <img
-            className={classes.beerImage}
-            src={beerImage}
-            alt="ebin"
-            onClick={() => click()}
-          />
-        </ClickMeTooltip>
+        <img
+          className={classes.beerImage}
+          src={beerImage}
+          alt="beer"
+          onClick={() => click()}
+        />
       </div>
       {autoClickerEnabled && (
         <div className={classes.perSecond}>

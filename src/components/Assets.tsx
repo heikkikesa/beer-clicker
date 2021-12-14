@@ -1,9 +1,9 @@
+import classNames from "classnames";
 import { Theme } from "@mui/material/styles";
 import createStyles from "@mui/styles/createStyles";
 import makeStyles from "@mui/styles/makeStyles";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import classNames from "classnames";
 import {
   Asset,
   AssetData,
@@ -299,10 +299,12 @@ const AssetsComponent = ({
                           asset.status === AssetStatus.Purchased && (
                             <div>
                               {formatLongNumber(
-                                Math.round(asset.bps * bps_multiplier)
+                                Math.round(
+                                  (asset.bps * bps_multiplier) / asset.amount
+                                )
                               )}{" "}
-                              / second ({((asset.bps / bps) * 100).toFixed(2)}%
-                              of total)
+                              per one ({((asset.bps / bps) * 100).toFixed(2)}%
+                              of total / second)
                             </div>
                           )}
                       </div>
