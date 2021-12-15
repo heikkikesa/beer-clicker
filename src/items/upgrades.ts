@@ -1,3 +1,5 @@
+import { allAssets } from "./assets";
+
 export enum UpgradeStatus {
   Unavailable,
   Available,
@@ -31,7 +33,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "homebrew-1",
       multiplier: 1.5,
-      price: 250,
+      price: allAssets.homebrew.initialPrice * 10,
       name: "Bigger kettle",
       description: "Increase kettle size by 50%",
       availabilityRequirement: 5,
@@ -39,7 +41,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "homebrew-2",
       multiplier: 2,
-      price: 2500,
+      price: allAssets.homebrew.initialPrice * 100,
       name: "Bigger fermentor",
       description: "Doubles the fermentor size",
       availabilityRequirement: 10,
@@ -47,7 +49,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "homebrew-3",
       multiplier: 2,
-      price: 25000,
+      price: allAssets.homebrew.initialPrice * 1000,
       name: "Automatic temperature control",
       description: "Doubles the beer quality",
       availabilityRequirement: 25,
@@ -55,7 +57,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "homebrew-4",
       multiplier: 2,
-      price: 250000,
+      price: allAssets.homebrew.initialPrice * 10000,
       name: "Better heater",
       description: "Precise heating doubles the beer quality",
       availabilityRequirement: 50,
@@ -63,7 +65,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "homebrew-5",
       multiplier: 10,
-      price: 2500000,
+      price: allAssets.homebrew.initialPrice * 100000,
       name: "Bottle filler",
       description: "Bottle beers 10 times faster with better filler",
       availabilityRequirement: 100,
@@ -73,7 +75,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "brewsystem-1",
       multiplier: 1.5,
-      price: 1500,
+      price: allAssets.brewsystem.initialPrice * 10,
       name: "Thermal sleeve",
       description: "50% faster heating",
       availabilityRequirement: 5,
@@ -81,7 +83,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "brewsystem-2",
       multiplier: 2,
-      price: 15000,
+      price: allAssets.brewsystem.initialPrice * 100,
       name: "Wort cooler",
       description: "Cool the wort twice as fast",
       availabilityRequirement: 10,
@@ -89,7 +91,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "brewsystem-3",
       multiplier: 2,
-      price: 150000,
+      price: allAssets.brewsystem.initialPrice * 1000,
       name: "Bigger machine",
       description: "Twice as big brewing system",
       availabilityRequirement: 25,
@@ -97,7 +99,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "brewsystem-4",
       multiplier: 2,
-      price: 1500000,
+      price: allAssets.brewsystem.initialPrice * 10000,
       name: "Kegging system",
       description: "Keg beer instead of bottling, twice as fast",
       availabilityRequirement: 50,
@@ -105,7 +107,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "brewsystem-5",
       multiplier: 10,
-      price: 15000000,
+      price: allAssets.brewsystem.initialPrice * 100000,
       name: "Pressure fermentor",
       description: "Big pressurized fermentor, increase output by 10",
       availabilityRequirement: 100,
@@ -115,7 +117,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "employee-1",
       multiplier: 1.5,
-      price: 9000,
+      price: allAssets.employee.initialPrice * 10,
       name: "Courses",
       description: "Beer making courses for employees, 50% output increase",
       availabilityRequirement: 5,
@@ -123,7 +125,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "employee-2",
       multiplier: 2,
-      price: 90000,
+      price: allAssets.employee.initialPrice * 100,
       name: "Brewmaster",
       description: "Hire a professional brewmaster to double the output",
       availabilityRequirement: 10,
@@ -131,7 +133,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "employee-3",
       multiplier: 2,
-      price: 900000,
+      price: allAssets.employee.initialPrice * 1000,
       name: "Shifts",
       description: "Work around the clock, double the output",
       availabilityRequirement: 25,
@@ -139,7 +141,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "employee-4",
       multiplier: 2,
-      price: 9000000,
+      price: allAssets.employee.initialPrice * 10000,
       name: "Bonuses",
       description: "Double the output by giving bonuses for reaching target",
       availabilityRequirement: 50,
@@ -147,7 +149,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "employee-5",
       multiplier: 10,
-      price: 90000000,
+      price: allAssets.employee.initialPrice * 100000,
       name: "Robots",
       description: "Replace employees with robots, 10x increase in profits",
       availabilityRequirement: 100,
@@ -157,7 +159,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "microbrewery-1",
       multiplier: 1.5,
-      price: 55000,
+      price: allAssets.microbrewery.initialPrice * 10,
       name: "Bigger equipment",
       description: "Increase equipment size by 50%",
       availabilityRequirement: 5,
@@ -165,7 +167,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "microbrewery-2",
       multiplier: 2,
-      price: 550000,
+      price: allAssets.microbrewery.initialPrice * 100,
       name: "Better rent",
       description: "Negotiate to cut the location rent by half",
       availabilityRequirement: 10,
@@ -173,7 +175,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "microbrewery-3",
       multiplier: 2,
-      price: 5500000,
+      price: allAssets.microbrewery.initialPrice * 1000,
       name: "Taproom",
       description: "Double the profits by selling beer straight from brewery",
       availabilityRequirement: 25,
@@ -181,7 +183,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "microbrewery-4",
       multiplier: 2,
-      price: 55000000,
+      price: allAssets.microbrewery.initialPrice * 10000,
       name: "Local stores",
       description: "Sell the beer in local stores, to double the profit",
       availabilityRequirement: 50,
@@ -189,7 +191,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "microbrewery-5",
       multiplier: 10,
-      price: 550000000,
+      price: allAssets.microbrewery.initialPrice * 100000,
       name: "Win competition",
       description:
         "Win a beer brewing competition, 10 times popularity increase",
@@ -200,7 +202,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "pub-1",
       multiplier: 1.5,
-      price: 350000,
+      price: allAssets.pub.initialPrice * 10,
       name: "Professional bartender",
       description: "Sell 50% more beer",
       availabilityRequirement: 5,
@@ -208,7 +210,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "pub-2",
       multiplier: 2,
-      price: 3500000,
+      price: allAssets.pub.initialPrice * 100,
       name: "Salted peanuts",
       description: "Double the beer sales by giving free peanuts",
       availabilityRequirement: 10,
@@ -216,7 +218,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "pub-3",
       multiplier: 2,
-      price: 35000000,
+      price: allAssets.pub.initialPrice * 1000,
       name: "More taps",
       description: "Double the available beer taps",
       availabilityRequirement: 25,
@@ -224,7 +226,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "pub-4",
       multiplier: 2,
-      price: 3500000,
+      price: allAssets.pub.initialPrice * 10000,
       name: "Karaoke",
       description: "Sell twice more beer during Karaoke evenings",
       availabilityRequirement: 50,
@@ -232,7 +234,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "pub-5",
       multiplier: 10,
-      price: 35000000,
+      price: allAssets.pub.initialPrice * 100000,
       name: "Better location",
       description: "10 times more customers by moving to city center",
       availabilityRequirement: 100,
@@ -242,7 +244,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "plant-1",
       multiplier: 1.5,
-      price: 2400000,
+      price: allAssets.plant.initialPrice * 10,
       name: "Cheaper electricity",
       description: "Negotiate 50% cheaper electricity contract",
       availabilityRequirement: 5,
@@ -250,7 +252,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "plant-2",
       multiplier: 2,
-      price: 24000000,
+      price: allAssets.plant.initialPrice * 100,
       name: "Canning equipment",
       description: "Double the output by canning the beers",
       availabilityRequirement: 10,
@@ -258,7 +260,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "plant-3",
       multiplier: 2,
-      price: 240000000,
+      price: allAssets.plant.initialPrice * 1000,
       name: "Shifts",
       description: "Work around the clock, double the productivity",
       availabilityRequirement: 25,
@@ -266,7 +268,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "plant-4",
       multiplier: 2,
-      price: 2400000000,
+      price: allAssets.plant.initialPrice * 100000,
       name: "Housing",
       description:
         "Build worker housing next to plant to double the profitability",
@@ -275,7 +277,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "plant-5",
       multiplier: 10,
-      price: 24000000000,
+      price: allAssets.plant.initialPrice * 1000000,
       name: "Move factory",
       description: "Move factory to a country with 10 times cheaper workforce",
       availabilityRequirement: 100,
@@ -285,7 +287,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "farm-1",
       multiplier: 1.5,
-      price: 14500000,
+      price: allAssets.farm.initialPrice * 10,
       name: "Wider sowers",
       description: "Sow 50% more grain",
       availabilityRequirement: 5,
@@ -293,7 +295,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "farm-2",
       multiplier: 2,
-      price: 145000000,
+      price: allAssets.farm.initialPrice * 100,
       name: "Fertilizer",
       description: "Use twice as efficient fertilizer",
       availabilityRequirement: 10,
@@ -301,7 +303,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "farm-3",
       multiplier: 2,
-      price: 1450000000,
+      price: allAssets.farm.initialPrice * 1000,
       name: "More hops",
       description: "Double the hop selection",
       availabilityRequirement: 25,
@@ -309,7 +311,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "farm-4",
       multiplier: 2,
-      price: 14500000000,
+      price: allAssets.farm.initialPrice * 10000,
       name: "Automatic equipment",
       description: "Grow twice as much grain, using automatic farm machines",
       availabilityRequirement: 50,
@@ -317,7 +319,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "farm-5",
       multiplier: 10,
-      price: 145000000000,
+      price: allAssets.farm.initialPrice * 100000,
       name: "Patents",
       description:
         "Patent the common varieties, increasing profits by 10 times",
@@ -328,7 +330,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "sponsor-1",
       multiplier: 1.5,
-      price: 85000000,
+      price: allAssets.sponsor.initialPrice * 10,
       name: "Darts",
       description: "Sponsor darts players, increase popularity by 50%",
       availabilityRequirement: 5,
@@ -336,7 +338,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "sponsor-2",
       multiplier: 2,
-      price: 850000000,
+      price: allAssets.sponsor.initialPrice * 100,
       name: "Golf",
       description: "Sponsor golf players, double the popularity",
       availabilityRequirement: 10,
@@ -344,7 +346,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "sponsor-3",
       multiplier: 2,
-      price: 8500000000,
+      price: allAssets.sponsor.initialPrice * 1000,
       name: "Ice-Hockey",
       description: "Sponsor Ice-Hockey teams, double the popularity",
       availabilityRequirement: 25,
@@ -352,7 +354,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "sponsor-4",
       multiplier: 2,
-      price: 85000000000,
+      price: allAssets.sponsor.initialPrice * 10000,
       name: "Cricket",
       description: "Sponsor cricket teams, double the popularity",
       availabilityRequirement: 50,
@@ -360,7 +362,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "sponsor-5",
       multiplier: 10,
-      price: 850000000000,
+      price: allAssets.sponsor.initialPrice * 100000,
       name: "Football",
       description:
         "Head sponsor of a football team, 10 times popularity increase",
@@ -371,7 +373,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "shipping-1",
       multiplier: 1.5,
-      price: 520000000,
+      price: allAssets.shipping.initialPrice * 10,
       name: "Neighbors",
       description: "Export beer to neighboring countries, 50% more profit",
       availabilityRequirement: 5,
@@ -379,7 +381,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "shipping-2",
       multiplier: 2,
-      price: 5200000000,
+      price: allAssets.shipping.initialPrice * 100,
       name: "International",
       description: "Double the profits by shipping the beer around the world",
       availabilityRequirement: 10,
@@ -387,7 +389,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "shipping-3",
       multiplier: 2,
-      price: 52000000000,
+      price: allAssets.shipping.initialPrice * 1000,
       name: "Own ships",
       description: "Buy a shipping company to double the profits",
       availabilityRequirement: 25,
@@ -395,7 +397,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "shipping-4",
       multiplier: 2,
-      price: 520000000000,
+      price: allAssets.shipping.initialPrice * 10000,
       name: "Tax relief",
       description: "Double the profits by negotiating tax reliefs for shipping",
       availabilityRequirement: 50,
@@ -403,7 +405,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "shipping-5",
       multiplier: 10,
-      price: 5200000000000,
+      price: allAssets.shipping.initialPrice * 100000,
       name: "Brewer ships",
       description: "10 times increase to profits by brewing beer on ships",
       availabilityRequirement: 100,
@@ -413,7 +415,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "buyout-1",
       multiplier: 1.5,
-      price: 3250000000,
+      price: allAssets.buyout.initialPrice * 10,
       name: "Microbreweries",
       description: "Buy out local microbreweries, improve market share by 50%",
       availabilityRequirement: 5,
@@ -421,7 +423,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "buyout-2",
       multiplier: 2,
-      price: 32500000000,
+      price: allAssets.buyout.initialPrice * 100,
       name: "Domestic breweries",
       description:
         "Buy out domestic larger breweries, double your market share",
@@ -430,7 +432,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "buyout-3",
       multiplier: 2,
-      price: 325000000000,
+      price: allAssets.buyout.initialPrice * 1000,
       name: "International breweries",
       description:
         "Buy out international larger breweries, double your market share",
@@ -439,7 +441,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "buyout-4",
       multiplier: 2,
-      price: 3250000000000,
+      price: allAssets.buyout.initialPrice * 10000,
       name: "Biggest breweries",
       description:
         "Buy out the worlds biggest breweries, double your market share",
@@ -448,7 +450,7 @@ export const allUpgrades: UpgradeDatas = {
     {
       id: "buyout-5",
       multiplier: 10,
-      price: 32500000000000,
+      price: allAssets.buyout.initialPrice * 100000,
       name: "Monopoly",
       description:
         "Increase your profits by 10 times, by being the only brewery in the world",

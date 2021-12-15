@@ -71,7 +71,7 @@ const ClickerComponent = ({
       </div>
       {autoClickerEnabled && (
         <div className={classes.perSecond}>
-          {Math.round(bps * bps_multiplier)} per second
+          {formatLongNumber(Math.round(bps * bps_multiplier))} per second
         </div>
       )}
     </div>

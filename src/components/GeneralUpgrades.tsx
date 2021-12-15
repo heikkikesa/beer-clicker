@@ -162,7 +162,7 @@ const GeneralUpgradesComponent = ({
       <div className={classes.header}>
         <div className={classes.title}>Beer Styles</div>
         <div className={classes.description}>
-          Each style improves profits by 20%
+          Each style improves profits by 10%
         </div>
       </div>
       <Accordion
