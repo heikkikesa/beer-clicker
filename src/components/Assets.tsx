@@ -94,7 +94,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     assetStats: {
       [theme.breakpoints.up("md")]: {
-        height: "1.5rem",
+        minHeight: "1.5rem",
+        paddingRight: theme.spacing(1),
       },
       color: theme.palette.grey[600],
     },
@@ -116,6 +117,9 @@ const useStyles = makeStyles((theme: Theme) =>
     amountWrapper: {
       display: "flex",
       alignItems: "center",
+      [theme.breakpoints.up("md")]: {
+        paddingLeft: "0!important",
+      },
     },
     assetAmount: {
       textAlign: "right",
